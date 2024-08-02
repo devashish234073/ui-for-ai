@@ -93,7 +93,7 @@
                                 "<p>Git Installed: $nodev<p>\n",
                                 "<p>Node Installed: $gitv<p>\n",
                                 "<p>Curl for Ollama: $curl_out1<p>\n",
-                                "<a href=\"http://${public_ip}:9999\">Click Here To Launch AI Chat</a>\n",
+                                "<a href=\"http://${public_ip}:9999/index.html\">Click Here To Launch AI Chat</a>\n",
                                 "<p>Query Resp from $model: $curl_out2<p>\n",
                                 "</body>\n",
                                 "</html>\n",
