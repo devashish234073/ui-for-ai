@@ -47,7 +47,8 @@
     }
 
     .response,
-    .prompt,.aiResp {
+    .prompt,
+    .aiResp {
       font-size: 11px;
       padding: 8px;
     }
@@ -140,6 +141,19 @@
             html = html.substring(html.indexOf("<html"));
             if (html.indexOf("```") > -1) {
               html = html.substring(0, html.indexOf("```"));
+              let START_WORD = '<' + 'script' + '>';
+              let start = html.indexOf(START_WORD);
+              let END_WORD = '<' + '/script' + '>';
+              let end = html.indexOf(END_WORD);
+              if (start > -1 && end > -1) {
+                let scriptStr = html.substring(start + START_WORD.length);
+                scriptStr = scriptStr.substring(0, scriptStr.indexOf(END_WORD));
+                console.log("injected script",scriptStr);
+                let script = _("script");
+                script.type = 'text/javascript';
+                script.text = scriptStr;
+                document.body.appendChild(script);
+              }
             }
             renderedResp.innerHTML = html;
           } else {
