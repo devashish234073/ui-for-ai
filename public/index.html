@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chat</title>
+  <style>
+    input {
+      height: 35px;
+    }
+
+    button {
+      height: 39px;
+      border: none;
+      color: white;
+      background-color: green;
+    }
+
+    button:active {
+      color: black;
+    }
+    .prompt, .aiResp {
+      font-size: 11px;
+    }
+    .prompt {
+      background-color: pink;
+    }
+    .aiResp {
+      background-color: lightblue;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>AI Chat</h1>
+  <pre id="responseParsed"></pre>
+  <input type="text" id="prompt" placeholder="Enter your prompt here">
+  <button onclick="generateCode()">Generate Code</button>
+  <h3>History</h3>
+  <table id="History">
+    
+  </table>
+  <h3>Raw Response From AI</h3>
+  <pre id="response"></pre>
+  <script>
+    function $(selector) {
+      return document.querySelector(selector);
+    }
+    function _(tag) {
+      return document.createElement(tag);
+    }
+    const responseArea = $('#response');
+    const responseAreaParsed = $('#responseParsed');
+    let lastPrompt = "";
+    async function generateCode() {
+      const prompt = $('#prompt').value.trim();
+      if(prompt=="") {
+        alert("Enter The Prompt");
+        return;
+      }
+      responseArea.textContent = '';
+      if(responseAreaParsed.textContent!='') {
+        let table = $("#history");
+        let tr0 = _("tr");
+        let tr1 = _("tr");
+        let td00 = _("td");
+        let td01 = _("td");
+        let td10 = _("td");
+        let td11 = _("td");
+        td00.setAttribute("class","prompt");
+        td00.innerText = lastPrompt;
+        td11.setAttribute("class","aiResp");
+        td11.innerText = responseAreaParsed.textContent;
+        table.appendChild(tr0);
+        table.appendChild(tr1);
+        tr0.appendChild(td00);
+        tr0.appendChild(td01);
+        tr1.appendChild(td10);
+        tr1.appendChild(td11);
+      }
+      lastPrompt = prompt;
+      responseAreaParsed.textContent = '';
+
+      const response = await fetch('/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: prompt })
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let result;
+
+      while (!result || !result.done) {
+        result = await reader.read();
+        const chunk = decoder.decode(result.value || new Uint8Array, { stream: !result.done });
+        responseArea.textContent += chunk;
+        try {
+          let chunkObj = JSON.parse(chunk);
+          console.log(chunkObj.response);
+          responseAreaParsed.textContent += chunkObj.response;
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
