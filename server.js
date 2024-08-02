@@ -4,6 +4,8 @@ const path = require('path');
 
 const app = express();
 const PORT = 9999;
+const MODEL_NAME = process.argv[2];
+console.log("running against model ",MODEL_NAME);
 
 app.use(express.json());
 
@@ -12,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/generate', (req, res) => {
   const prompt = req.body.prompt;
   const postData = JSON.stringify({
-    model: 'qwen2:0.5b',
+    model: MODEL_NAME,
     prompt: prompt
   });
 

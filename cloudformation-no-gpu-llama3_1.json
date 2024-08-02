@@ -25,6 +25,15 @@
                 "ImageId": "ami-03f4878755434977f",
                 "InstanceType": "t2.large",
                 "KeyName": "kp1",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda1",
+                        "Ebs": {
+                            "VolumeSize": 15,
+                            "VolumeType": "gp2"
+                        }
+                    }
+                ],
                 "Tags": [
                     {
                         "Key": "Name",
@@ -81,7 +90,7 @@
                                 "git clone https://github.com/devashish234073/ui-for-ai\n",
                                 "cd ui-for-ai\n",
                                 "npm install\n",
-                                "node server.js&\n",
+                                "node server.js $model&\n",
                                 "cd ..\n",
                                 "cat <<EOF > /var/www/html/index.html\n",
                                 "<!DOCTYPE html>\n",
