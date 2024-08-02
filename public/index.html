@@ -3,45 +3,82 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Chat</title>
   <style>
-    input {
-      height: 35px;
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 600px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      margin-top: 8px;
     }
 
     button {
-      height: 39px;
+      width: 100%;
+      padding: 10px;
       border: none;
       color: white;
       background-color: green;
+      cursor: pointer;
+      font-size: 16px;
     }
 
     button:active {
       color: black;
     }
-    .prompt, .aiResp {
-      font-size: 11px;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
+
+    .response,
+    .prompt,.aiResp {
+      font-size: 11px;
+      padding: 8px;
+    }
+
     .prompt {
       background-color: pink;
     }
+
     .aiResp {
       background-color: lightblue;
+    }
+
+    #responseParsed {
+      font-size: 11px;
     }
   </style>
 </head>
 
 <body>
-  <h1>AI Chat</h1>
-  <pre id="responseParsed"></pre>
-  <input type="text" id="prompt" placeholder="Enter your prompt here">
-  <button onclick="generateCode()">Generate Code</button>
-  <h3>History</h3>
-  <table id="history">
-    
-  </table>
-  <h3>Raw Response From AI</h3>
-  <pre id="response"></pre>
+  <div class="container">
+    <h1>AI Chat</h1>
+    <p id="responseParsed"></p>
+    <label for="prompt">Enter your prompt here</label>
+    <textarea id="prompt" placeholder="Enter your prompt here" rows="4" aria-label="Prompt"></textarea>
+    <button onclick="generateCode()" id="generateCodeBtn" aria-label="Generate Code">Generate Code</button>
+    <h3>Raw Response From AI</h3>
+    <textarea id="response" readonly rows="4" aria-label="Raw Response"></textarea>
+    <h3>History</h3>
+    <table id="history" role="table"></table>
+    <p id="renderedResp"></p>
+  </div>
   <script>
     function $(selector) {
       return document.querySelector(selector);
@@ -51,35 +88,32 @@
     }
     const responseArea = $('#response');
     const responseAreaParsed = $('#responseParsed');
+    const renderedResp = $('#renderedResp');
     let lastPrompt = "";
     async function generateCode() {
       const prompt = $('#prompt').value.trim();
-      if(prompt=="") {
+      if (prompt == "") {
         alert("Enter The Prompt");
         return;
       }
-      responseArea.textContent = '';
-      if(responseAreaParsed.textContent!='') {
+      responseArea.value = '';
+      if (responseAreaParsed.innerText != '') {
         let table = $("#history");
         let tr0 = _("tr");
         let tr1 = _("tr");
         let td00 = _("td");
-        let td01 = _("td");
-        let td10 = _("td");
         let td11 = _("td");
-        td00.setAttribute("class","prompt");
+        td00.setAttribute("class", "prompt");
         td00.innerText = lastPrompt;
-        td11.setAttribute("class","aiResp");
-        td11.innerText = responseAreaParsed.textContent;
+        td11.setAttribute("class", "aiResp");
+        td11.innerText = responseAreaParsed.innerText;
         table.appendChild(tr0);
         table.appendChild(tr1);
         tr0.appendChild(td00);
-        tr0.appendChild(td01);
-        tr1.appendChild(td10);
         tr1.appendChild(td11);
       }
       lastPrompt = prompt;
-      responseAreaParsed.textContent = '';
+      responseAreaParsed.innerText = '';
 
       const response = await fetch('/generate', {
         method: 'POST',
@@ -96,11 +130,21 @@
       while (!result || !result.done) {
         result = await reader.read();
         const chunk = decoder.decode(result.value || new Uint8Array, { stream: !result.done });
-        responseArea.textContent += chunk;
+        responseArea.value += chunk;
         try {
           let chunkObj = JSON.parse(chunk);
-          console.log(chunkObj.response);
-          responseAreaParsed.textContent += chunkObj.response;
+          //console.log(chunkObj.response);
+          responseAreaParsed.innerText += chunkObj.response;
+          if (responseAreaParsed.innerText.indexOf("<html") > -1) {
+            let html = responseAreaParsed.innerText;
+            html = html.substring(html.indexOf("<html"));
+            if (html.indexOf("```") > -1) {
+              html = html.substring(0, html.indexOf("```"));
+            }
+            renderedResp.innerHTML = html;
+          } else {
+            renderedResp.innerHTML = "";
+          }
         } catch (e) {
           console.log(e);
         }
