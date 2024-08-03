@@ -81,7 +81,7 @@
                                 "git clone https://github.com/devashish234073/ui-for-ai\n",
                                 "cd ui-for-ai\n",
                                 "npm install\n",
-                                "node server.js $model&\n",
+                                "node server.js&\n",
                                 "cd ..\n",
                                 "cat <<EOF > /var/www/html/index.html\n",
                                 "<!DOCTYPE html>\n",
