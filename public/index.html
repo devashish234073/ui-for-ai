@@ -64,12 +64,18 @@
     #responseParsed {
       font-size: 11px;
     }
+
+    #models {
+      margin-top: 10px;
+      height: 35px;
+      outline: none;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>AI Chat</h1>
+    <select id="models"></select><h1>AI Chat</h1>
     <p id="responseParsed"></p>
     <label for="prompt">Enter your prompt here</label>
     <textarea id="prompt" placeholder="Enter your prompt here" rows="4" aria-label="Prompt"></textarea>
@@ -87,6 +93,32 @@
     function _(tag) {
       return document.createElement(tag);
     }
+    async function populateModelsDropDown() {
+      const modelsResp = await fetch('/models', {
+        method: 'GET'
+      });
+      console.log("modelsResp", modelsResp);
+      const reader = modelsResp.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let result;
+      let chunk = "";
+      while (!result || !result.done) {
+        result = await reader.read();
+        chunk += decoder.decode(result.value || new Uint8Array, { stream: !result.done });
+      }
+      let models = JSON.parse(chunk);
+      console.log("chunk",models);
+      let sel = $("#models");
+      if(models) {
+        for(let modelIndx=0;modelIndx<models.length;modelIndx++) {
+          let opt = _("option");
+          opt.innerText = models[modelIndx];
+          opt.value = models[modelIndx];
+          sel.appendChild(opt);
+        }
+      }
+    }
+    populateModelsDropDown();
     const responseArea = $('#response');
     const responseAreaParsed = $('#responseParsed');
     const renderedResp = $('#renderedResp');
@@ -121,7 +153,7 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ prompt: prompt })
+        body: JSON.stringify({ prompt: prompt, model: $("#models").value })
       });
 
       const reader = response.body.getReader();
@@ -148,7 +180,7 @@
               if (start > -1 && end > -1) {
                 let scriptStr = html.substring(start + START_WORD.length);
                 scriptStr = scriptStr.substring(0, scriptStr.indexOf(END_WORD));
-                console.log("injected script",scriptStr);
+                console.log("injected script", scriptStr);
                 let script = _("script");
                 script.type = 'text/javascript';
                 script.text = scriptStr;
