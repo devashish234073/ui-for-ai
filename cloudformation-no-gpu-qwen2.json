@@ -70,7 +70,7 @@
                                 "sleep 5\n",
                                 "ollama pull $model\n",
                                 "curl_out1=$(curl http://localhost:11434)\n",
-                                "curl_out2=$(curl http://localhost:11434/api/generate -d '{\"model\": \"qwen2:0.5b\",\"prompt\": \"Why is the sky blue?\"}')\n",
+                                "curl_out2=$(curl http://localhost:11434/api/generate -d '{\"model\": \"qwen2:0.5b\",\"prompt\": \"Write a poem on goat in 10 words\"}')\n",
                                 "public_ip=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)\n",
                                 "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash\n",
                                 "export NVM_DIR=\"$HOME/.nvm\"\n",
