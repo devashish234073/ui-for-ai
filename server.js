@@ -28,6 +28,7 @@ function populateModels() {
 }
 if(process.argv[2]) {
   models.push(process.argv[2]);
+  console.log("overriding with only one model ",models);
 } else {
   populateModels();
 }
