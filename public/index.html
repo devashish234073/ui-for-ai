@@ -27,7 +27,7 @@
       margin-top: 8px;
     }
 
-    button {
+    #generateResponseBtn {
       width: 100%;
       padding: 10px;
       border: none;
@@ -37,11 +37,11 @@
       font-size: 16px;
     }
 
-    button:active {
+    #generateResponseBtn:active {
       color: black;
     }
 
-    table {
+    #history {
       width: 100%;
       border-collapse: collapse;
     }
@@ -79,7 +79,7 @@
     <p id="responseParsed"></p>
     <label for="prompt">Enter your prompt here</label>
     <textarea id="prompt" placeholder="Enter your prompt here" rows="4" aria-label="Prompt"></textarea>
-    <button onclick="generateCode()" id="generateCodeBtn" aria-label="Generate Code">Generate Code</button>
+    <button onclick="generateResponse()" id="generateResponseBtn" aria-label="Generate Response">Generate Response</button>
     <h3>Raw Response From AI</h3>
     <textarea id="response" readonly rows="4" aria-label="Raw Response"></textarea>
     <h3>History</h3>
@@ -123,7 +123,7 @@
     const responseAreaParsed = $('#responseParsed');
     const renderedResp = $('#renderedResp');
     let lastPrompt = "";
-    async function generateCode() {
+    async function generateResponse() {
       const prompt = $('#prompt').value.trim();
       if (prompt == "") {
         alert("Enter The Prompt");
