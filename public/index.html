@@ -8,42 +8,73 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
       margin: 0;
     }
 
+    * {
+      outline: none;
+    }
+
     .container {
+      background: linear-gradient(135deg, #1c1c1c, #444444);
+      padding: 2em;
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 40px rgba(0, 255, 255, 0.2);
       width: 80%;
       max-width: 600px;
+    }
+
+    textarea {
+      resize: none;
     }
 
     input,
     textarea {
       width: 100%;
       padding: 8px;
+      background: none;
+      border: 2px solid #00ffff;
+      border-radius: 5px;
+      color: #ffffff;
       box-sizing: border-box;
       margin-top: 8px;
+      border: 1px solid #00ffff;
+    }
+
+    select {
+      background: none;
+      border: 2px solid #00ffff;
+      border-radius: 5px;
+      color: #ffffff;
     }
 
     #generateResponseBtn {
       width: 100%;
       padding: 10px;
+      background: #00ffff;
       border: none;
-      color: white;
-      background-color: green;
+      border-radius: 5px;
+      color: #0d0d0d;
+      font-size: 1em;
       cursor: pointer;
+      transition: background 0.3s;
       font-size: 16px;
     }
 
     #generateResponseBtn:active {
-      color: black;
+      color: white;
     }
 
     #history {
       width: 100%;
       border-collapse: collapse;
+      color: black;
     }
 
     .response,
@@ -75,11 +106,13 @@
 
 <body>
   <div class="container">
-    <select id="models"></select><h1>AI Chat</h1>
+    <select id="models"></select>
+    <h1>AI Chat</h1>
     <p id="responseParsed"></p>
     <label for="prompt">Enter your prompt here</label>
     <textarea id="prompt" placeholder="Enter your prompt here" rows="4" aria-label="Prompt"></textarea>
-    <button onclick="generateResponse()" id="generateResponseBtn" aria-label="Generate Response">Generate Response</button>
+    <button onclick="generateResponse()" id="generateResponseBtn" aria-label="Generate Response">Generate
+      Response</button>
     <h3>Raw Response From AI</h3>
     <textarea id="response" readonly rows="4" aria-label="Raw Response"></textarea>
     <h3>History</h3>
@@ -107,10 +140,10 @@
         chunk += decoder.decode(result.value || new Uint8Array, { stream: !result.done });
       }
       let models = JSON.parse(chunk);
-      console.log("chunk",models);
+      console.log("chunk", models);
       let sel = $("#models");
-      if(models) {
-        for(let modelIndx=0;modelIndx<models.length;modelIndx++) {
+      if (models) {
+        for (let modelIndx = 0; modelIndx < models.length; modelIndx++) {
           let opt = _("option");
           opt.innerText = models[modelIndx];
           opt.value = models[modelIndx];
