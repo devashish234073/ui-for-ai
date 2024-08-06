@@ -161,6 +161,7 @@
     const responseAreaParsed = $('#responseParsed');
     const renderedResp = $('#renderedResp');
     let lastPrompt = "";
+    let injectedScriptHashes = [];
     async function generateResponse() {
       const prompt = $('#prompt').value.trim();
       if (prompt == "") {
@@ -218,11 +219,16 @@
               if (start > -1 && end > -1) {
                 let scriptStr = html.substring(start + START_WORD.length);
                 scriptStr = scriptStr.substring(0, scriptStr.indexOf(END_WORD));
-                console.log("injected script", scriptStr);
-                let script = _("script");
-                script.type = 'text/javascript';
-                script.text = scriptStr;
-                document.body.appendChild(script);
+                hashString(scriptStr).then((hashedValue) => {
+                  if (injectedScriptHashes.indexOf(hashedValue) == -1) {
+                    injectedScriptHashes.push(hashedValue);
+                    console.log("injected script", scriptStr);
+                    let script = _("script");
+                    script.type = 'text/javascript';
+                    script.text = scriptStr;
+                    document.body.appendChild(script);
+                  }
+                });
               }
             }
             renderedResp.innerHTML = html;
@@ -233,6 +239,14 @@
           console.log(e);
         }
       }
+    }
+
+    async function hashString(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
     }
   </script>
 </body>
